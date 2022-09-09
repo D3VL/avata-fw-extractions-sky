@@ -61,8 +61,8 @@ jobs:
       - name: Commit changes
         run: git add -A && git commit -m "Extracted firmware ${{ steps.fw_version.outputs.name }}" && git push origin "${{ steps.fw_version.outputs.name }}"
 
-      - name: Merge into master
-        run: git checkout master && git merge "${{ steps.fw_version.outputs.name }}" && git push origin master
+      - name: Merge into merged
+        run: git checkout main && git merge "${{ steps.fw_version.outputs.name }}" && git push origin main
 
       - name: Delete Firmware File
         run: rm -rf ~/temp/${{ steps.fw_name.outputs.name }}
