@@ -315,12 +315,12 @@
 
 		"video_rate_table_20m":{
 	        	"help":"value: 0:disable bitrate 1:1M Bitrate 2:2M Bitrate 3:3M Bitrate ... 60:60M Bitrate",
-			"MCS0" : 1.2,
-			"MCS1" : 2.5,
-			"MCS2" : 5,
-			"MCS3" : 10,
-			"MCS4" : 15,
-			"MCS5" : 20
+			"MCS0" : 1.8,
+			"MCS1" : 4,
+			"MCS2" : 8,
+			"MCS3" : 16,
+			"MCS4" : 24,
+			"MCS5" : 32
                 },
 
 		"video_rate_table_40m":{

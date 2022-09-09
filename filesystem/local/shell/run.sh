@@ -178,7 +178,7 @@ while [ 1 ]; do
     if [ -e "/dev/ar_lancher" ]; then
         if [ -e "/local/usr/bin/fpv_ldy" ]; then
             echo "start fpv ldy"
-			fpv_ldy --type sky --fps 100 --width 1280 --height 720&
+			fpv_ldy --type sky --start_bitrate 2560 --fps 100 --width 1280 --height 720&
         else
             echo "no fpv app!!!!"
         fi
