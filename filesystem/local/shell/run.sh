@@ -247,7 +247,8 @@ chmod 777 /local/usr/bin/mkexfatfs
 
 fpv_sky_led &
 #ar_fpv_service 0 &
-fpv_sky_service $BOARD_VER &
+
+fpv_sky_service -b $BOARD_VER &
 bb_match -t 0 &
 
 exit

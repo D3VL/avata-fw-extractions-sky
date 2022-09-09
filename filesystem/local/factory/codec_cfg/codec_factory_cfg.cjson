@@ -2,7 +2,7 @@
     "HEVC": {
         "encoder_lowdelay_cfg": {
             "minQP" : 24,
-            "maxQP" : 45,
+            "maxQP" : 51,
             "maxDeltaQp" : 4,
             "intraQP" : 28,
             "sliceIntEnable" : 1,
@@ -47,11 +47,11 @@
             "chromaCrQpOffset" : 2,
             "initialRcQp" : 28,
             "intraMinQp" : 24,
-            "intraMaxQp" : 45,
+            "intraMaxQp" : 51,
             "bs_mem_size" : 5242880,
 			      "constIntraPredFlag": 0,
-			      "cuSizeMode": 7,
-			      "intraInInterSliceEnable": 1
+			      "cuSizeMode": 3,
+			      "intraInInterSliceEnable": 0
         },
         "encoder_normal_cfg": {
             "minQP" : 10,
