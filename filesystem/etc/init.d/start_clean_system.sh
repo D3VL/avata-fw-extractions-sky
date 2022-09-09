@@ -26,9 +26,12 @@ echo ${LD_LIBRARY_PATH}
 
 if [ -e "/local/usr/bin/ar_fpv_upgrade" ]; then
     cp /local/usr/lib/* /tmp
+	cp /local/usr/bin/fpv_sky_board_precfg /tmp
     cp /local/usr/bin/ar_fpv_upgrade /tmp
     #/etc/init.d/export_leds.sh
-    /tmp/ar_fpv_upgrade -r 1 &
+	/tmp/fpv_sky_board_precfg -u
+	BOARD_VER=$?
+    /tmp/ar_fpv_upgrade -r 1 -v $BOARD_VER &
 fi
 
 # reboot after 10min, if you have a different reboot command,

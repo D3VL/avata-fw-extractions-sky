@@ -48,7 +48,15 @@ function auto_fsck_sky()
         ;;
     esac
 }
-
+function cfg_fpv_sky_board()
+{
+	if [ -e /local/usr/bin/fpv_sky_board_precfg ] ; then
+		/local/usr/bin/fpv_sky_board_precfg
+		return $?
+	else
+		return -1
+	fi
+}
 ##################################################################
 #                        sys start                               #
 ##################################################################
@@ -171,6 +179,10 @@ fi
 
 mkdir /record
 auto_fsck_sky
+cfg_fpv_sky_board
+#BOARD_VER,0-6s2T2R,1-6s1T1R,2-1S1T1R
+BOARD_VER=$?
+echo "board_ver=$BOARD_VER"
 
 #resolution 0: 1080p, 1:4K
 resolution=0
@@ -235,7 +247,7 @@ chmod 777 /local/usr/bin/mkexfatfs
 
 fpv_sky_led &
 #ar_fpv_service 0 &
-fpv_sky_service &
+fpv_sky_service $BOARD_VER &
 bb_match -t 0 &
 
 exit
