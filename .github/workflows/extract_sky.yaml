@@ -39,27 +39,27 @@ jobs:
 
       - name: Get Firmware Name
         id: fw_name
-        run: basename "${{ github.event.issue.body }}"
+        run: echo "::set-output name=name::$(basename \"${{ github.event.issue.body }}\")"
 
-      - name: Pull Firmware Version from name
+      - name: Get Firmware Version from name
         id: fw_version
-        run: basename "${{ github.event.issue.body }}" | sed -e 's/Avatar_Sky_//' | sed -e 's/.img//'
+        run: echo "::set-output name=name::$(basename '${{ github.event.issue.body }}' | sed -e 's/Avatar_Sky_//' | sed -e 's/.img//')"
 
       - name: Create a branch with the firmware version
         id: create_branch
-        run: git checkout -b "${{ steps.fw_version.outputs.content }}" 
+        run: git checkout -b "${{ steps.fw_version.outputs.name }}" 
       
       - name: Run extractor
-        run: ~/ar-firmware-tools/scripts/avatar_extract.sh "~/temp/${{ steps.fw_name.outputs.content }}"
+        run: ~/ar-firmware-tools/scripts/avatar_extract.sh "~/temp/${{ steps.fw_name.outputs.name }}"
 
       - name: Commit changes
-        run: git add -A && git commit -m "Extracted firmware ${{ steps.fw_version.outputs.content }}" && git push origin "${{ steps.fw_version.outputs.content }}"
+        run: git add -A && git commit -m "Extracted firmware ${{ steps.fw_version.outputs.name }}" && git push origin "${{ steps.fw_version.outputs.name }}"
 
       - name: Merge into master
-        run: git checkout master && git merge "${{ steps.fw_version.outputs.content }}" && git push origin master
+        run: git checkout master && git merge "${{ steps.fw_version.outputs.name }}" && git push origin master
 
       - name: Delete Firmware File
-        run: rm -rf ~/temp/${{ steps.fw_name.outputs.content }}
+        run: rm -rf ~/temp/${{ steps.fw_name.outputs.name }}
 
       - uses: actions/github-script@v3
         with:
