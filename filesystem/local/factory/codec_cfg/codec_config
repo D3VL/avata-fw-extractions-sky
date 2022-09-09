@@ -1,0 +1,13 @@
+menuconfig codec_cfg_menu
+    bool "codec config file"
+
+if codec_cfg_menu
+
+config codec_cfg
+    bool "select codec config file"
+    default n
+	help
+	add codec_cfg file
+
+
+endif

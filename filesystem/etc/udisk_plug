@@ -1,0 +1,28 @@
+#!/bin/sh
+sync
+case $ACTION in
+remove)
+	umount /media/usb$MDEV
+	rm -rf /media/usb$MDEV
+	;;
+add)
+	mkdir -p /media/usb$MDEV
+	mount /dev/$MDEV /media/usb$MDEV
+	while [ -e /dev/$MDEV ]
+	do
+		sleep 1
+		dd if=/dev/$MDEV of=/dev/null bs=8 count=1 1>/dev/null 2>&1
+		result=$?
+		for i in $(seq 1 1 10)
+		do
+			if [ $result == 0 ] && [ -e /dev/$MDEV$i ] && [ ! -e /media/usb$MDEV$i ]; then
+				mkdir /media/usb$MDEV$i
+				mount /dev/$MDEV$i /media/usb$MDEV$i
+			elif [ $result != 0 ] && [ -e /dev/$MDEV$i ] && [ -e /media/usb$MDEV$i ]; then
+				umount /dev/$MDEV$i
+				rm -rf /media/usb$MDEV$i
+			fi
+		done
+	done
+	;;
+esac

@@ -1,0 +1,437 @@
+{
+
+	"SN": ["0x01", "0x00", "0x00", "0x00"],
+	"bb_mac_config": {
+		"candidate_mode": 1,
+		"bb_mac_addr": ["0x5A", "0x4B","0xCC","0xFF","0x41","0x32","0x33","0x99"]
+	},
+
+	"bb_rf_config": {
+                "rf_chip": 0,	
+		"rf8003s_init_reg": [
+			"0x7C","0x00","0x00","0xC0","0x00","0x00","0x00","0x00","0x3C","0x00","0x00","0x00","0x3C","0x00","0x00","0x00",
+			"0x00","0x80","0xa0","0x74","0x60","0x50","0x00","0x00","0x00","0x00","0x00","0x00","0x00","0x4F","0x00","0x00",
+			"0x00","0x40","0x40","0x48","0x00","0x54","0x00","0x00","0x00","0x00","0x10","0x00","0x1F","0x00","0x10","0x0F",
+			"0x1F","0x00","0x28","0x40","0x00","0xB0","0xE0","0x00","0x37","0x00","0x14","0x00","0x13","0xC0","0x44","0x01",
+			"0x7C","0x00","0x00","0x23","0x00","0x87","0x80","0x74","0x74","0x00","0x00","0x00","0x00","0x10","0x10","0x88",
+			"0x00","0x00","0xCC","0x00","0x00","0x00","0x00","0x00","0x00","0x00","0x00","0x00","0xA0","0x00","0x00","0x00",
+			"0x00","0x00","0x00","0x00","0x00","0x40","0x10","0x10","0x00","0x00","0xAD","0xAD","0x5E","0x00","0x00","0x00",
+			"0x00","0x00","0x00","0x00","0x00","0x00","0x00","0x00","0x00","0x00","0x00","0x00","0x00","0x01","0x37","0x01"
+		],
+		"rf8003_init_reg": [
+                        "0x74","0x00","0x00","0xC2","0x00","0x02","0x00","0x00","0x2F","0x00","0x00","0x00","0x2F","0x00","0x00","0x00",
+                        "0x00","0x80","0xC0","0x92","0x60","0x50","0x00","0x00","0x00","0x00","0x00","0x00","0x00","0x7D","0x00","0x00",
+                        "0x00","0x40","0x40","0x48","0x00","0x54","0x00","0x00","0x25","0x00","0x09","0x00","0x1F","0xF2","0x02","0x0F",
+                        "0x1F","0x00","0x28","0x40","0x00","0x70","0xE0","0xE0","0x37","0x00","0x04","0x00","0x17","0x7C","0x40","0x00",
+                        "0x7C","0x00","0x00","0xC0","0x00","0x02","0x00","0x00","0x1F","0x00","0x00","0x00","0x20","0x00","0x00","0x00",
+                        "0x00","0x00","0x00","0x92","0x60","0x50","0x00","0x00","0x00","0x00","0x00","0x00","0x00","0x7D","0x00","0x00",
+                        "0x00","0x40","0x40","0x48","0x00","0x54","0x0A","0x0A","0x25","0x00","0x09","0x12","0x7D","0x2D","0x09","0xDF",
+                        "0x1F","0x00","0x28","0x40","0x00","0x70","0xE0","0x00","0x37","0x00","0x04","0x00","0x17","0x6E","0x40","0x00"
+		]
+	},
+
+	"goden_config": {
+		"enable": 0
+	},
+
+	"ce_crt_config": {	
+		
+		"ce_crt_param":{
+			"ce_mode": 0,
+			"fs_bw":  20,      
+			"slot_pwr_thresh": -66,  
+			"br_pwr_thresh":  -72,
+			"br_send_next_frame": 1
+		}
+	},
+	
+	"bb_sys_init_config": {	
+
+		"sys_init_cfg_t":{
+			"rf_band":           "0:RF_2G  1:RF_5G",
+			"slot_pkg_len_t":    "0:OFDM_6  1:OFDM_12 2:OFDM_18 3:OFDM_24 4:OFDM_48 5:OFDM_96",
+			"slot_ofdm_num_t":   "0:TINTLV_MODE_0 1:TINTLV_MODE_1 2:TINTLV_MODE_2 3:TINTLV_MODE_3 4:TINTLV_MODE_4 5:TINTLV_MODE_5 6:TINTLV_MODE_6,7:TINTLV_MODE_7(48symbol)",
+			"slot_bw_t":         "0:_1_25_MHZ  1:_2_5_MHZ 2:_5_MHZ 3:_10_MHZ 4:_20_MHZ 5:_40_MHZ",
+			"slot_tx_rx_mode_t": "0:TX1_RX1_0 1:TX1_RX1_1 2:TX1_RX2 3:TX1_RX4 4:TX2_RX2_0 5:TX2_RX2_1 6:TX2_RX4_0 7:TX2_RX4_1",
+			"slot_cp_len_t":     "0:1/16   1:1/8   2:1/4",
+			"br_bw_t":           "0:_1_25_MHZ  1:_2_5_MHZ 2:_5_MHZ 3:_10_MHZ 4:_20_MHZ 5:_40_MHZ",
+			"br_pkg_len_t":      "0:OFDM_6  1:OFDM_12 2:OFDM_18 3:OFDM_24 4:OFDM_48 5:OFDM_96",
+			"br_cr_t":           "0:BR_CR_1_2  1:BR_CR_2_3",
+			"br_rep_t":          "0:REPEAT_MODE_0 1:REPEAT_MODE_1 2:REPEAT_MODE_2 3:REPEAT_MODE_3 4:REPEAT_MODE_4 5:REPEAT_MODE_5 6:REPEAT_MODE_6 7:REPEAT_MODE_7",
+			"br_qam_t":          "0:BPSK  1:QPSK 2:QAM_16 3:QAM_64 4:QAM_256",
+			"br_tx_rx_mode_t":   "0:TX1_RX1_0 1:TX1_RX1_1 2:TX1_RX2 3:TX1_RX4 4:TX2_RX2_0 5:TX2_RX2_1 6:TX2_RX4_0 7:TX2_RX4_1",
+			"csma_rep_t":        "0:REPEAT_MODE_0 1:REPEAT_MODE_1 2:REPEAT_MODE_2 3:REPEAT_MODE_3 4:REPEAT_MODE_4 5:REPEAT_MODE_5 6:REPEAT_MODE_6 7:REPEAT_MODE_7",
+			"csma_pkg_len_t":    "0:OFDM_6  1:OFDM_12 2:OFDM_18 3:OFDM_24 4:OFDM_48 5:OFDM_96",
+			"sys_work_mode_t":   "0:MODE_MASTER, 1:MODE_SLAVE ; ONLY FOR AP 2:BROADCAST",
+			"mcs_mode":          "0:AUTO 1:MANUAL ",
+			"mode_b setting0":    "OFDM_96 TINTLV_MODE_6 _40_MHZ TX2_RX4_0 TX1_RX2",
+			"mode_b setting1":    "OFDM_48 TINTLV_MODE_5 _20_MHZ TX2_RX4_0 TX1_RX2",
+                        "detintlv_mode"  :   "0:sram(0x30140000-0x30200000), 1:ddr"
+		},
+		
+		"sys_mode_sel": {
+	        	"help":"0: 7.1 frame struct, 1:12.7 frame struct, 2:broadcast frame struct, 5ms intlv",
+			"sys_mode": 0
+
+	  	},
+  		"sys_init_cfg_mod_b_7p1": {		
+			"rf_band": 1,
+			"slot_pkg_len": 4,
+			"slot_ofdm_num":5,
+			"slot_bw": 4,
+			"slot_tx_rx_mode": 6,
+			"slot_cp_len": 1,
+			"br_bw": 2,
+			"br_pkg_len": 0,
+			"br_cr": 0,
+			"br_rep": 2,
+			"br_qam": 0,
+			"br_tx_rx_mode":2,
+			"sys_work_mode":0,
+			"mcs_mode": 0,
+			"high_mode": 1,
+                        "detintlv_mode":0 
+	  	},
+  		"sys_init_cfg_mod_b_12p7": {		
+			"rf_band": 0,
+  			"slot_pkg_len": 5,
+  			"slot_ofdm_num":7,
+  			"slot_bw": 3,
+  			"slot_tx_rx_mode": 2,
+  			"slot_cp_len": 1,
+  			"br_bw": 2,
+  			"br_pkg_len": 1,
+  			"br_cr": 0,
+  			"br_rep": 2,
+  			"br_qam": 0,
+  			"br_tx_rx_mode":2,
+			"sys_work_mode":0,
+  			"mcs_mode": 0,
+                        "detintlv_mode":1
+  		},
+  		"sys_init_cfg_mod_b_broadcast": {		
+			"rf_band": 1,
+  			"slot_pkg_len": 4,
+  			"slot_ofdm_num":7,
+  			"slot_bw": 5,
+  			"slot_tx_rx_mode": 2,
+  			"slot_cp_len": 1,
+  			"br_bw": 2,
+  			"br_pkg_len": 0,
+  			"br_cr": 0,
+  			"br_rep": 2,
+  			"br_qam": 0,
+  			"br_tx_rx_mode":2,
+			"sys_work_mode":2,
+			"mcs_mode": 0,
+			"frame_with_sweep":0,
+			"repeat_mode":1,
+                        "detintlv_mode":1
+  		},
+
+  		"sys_init_cfg_mod_d": {
+			"rf_band": 1,
+  			"slot_pkg_len": 3,
+  			"slot_ofdm_num":6,
+  			"slot_bw": 5,
+  			"slot_tx_rx_mode": 2,
+  			"br_bw": 2,
+  			"br_pkg_len": 2,
+  			"br_cr": 0,
+  			"br_rep": 2,
+  			"br_qam": 0,
+  			"br_tx_rx_mode":2,
+			"sys_work_mode":0,
+  			"mcs_mode": 0,
+  			
+  			"csma_rep": 0,
+  			"csma_pkg_len": 0
+  		},
+  		"bb_default_config": {
+  			"help": " main_chan (0 ~ max_in_freq_table) ; if(main_chn==254) sweep freq,choose best chn and freq fixed;if(main_chn == 255) firmware will sweep freq and choose the best band br_hop_mode : 0:AUTO_MODE  1:MANUAL_MODE main_hop_mode: 0:AUTO_MODE  1:MANUAL_MODE",
+  			"main_chan": 255,
+  			"br_hop_mode": 0,
+  			"main_hop_mode": 0,
+  			"fs_row_num": 128,
+  			"shut_down_flag":0
+  		}
+	},
+
+
+	"bb_chan_config": {
+		"br_slot_freq_offset": 2500,
+
+		"slot_2_4_g_40m_freq_num": 5,
+		"slot_2_4_g_40m_freq_table": [2422000, 2430000, 2438000, 2446000, 2454000 ],
+		
+		"slot_5_8_g_40m_freq_num": 4,
+		"slot_5_8_g_40m_freq_table": [5695000, 5770000, 5878000, 5839000 ],
+		"slot_2_4_g_20m_freq_num": 7,							  
+		"slot_2_4_g_20m_freq_table": [2414000, 2422000, 2430000, 2438000, 2446000, 2454000, 2462000 ],
+		
+		"slot_5_8_g_20m_freq_num": 4,
+		"slot_5_8_g_20m_freq_table": [5735000, 5770000, 5805000, 5839000],
+		"slot_5_8_g_20m_freq_table_7_back": [ 5180000, 5200000, 5220000, 5760000, 5780000, 5800000, 5820000 ],	
+		
+		"slot_2_4_g_10m_freq_num": 15,
+		"slot_2_4_g_10m_freq_table": [2312000, 2332000, 2352000, 2372000, 2392000, 2412000, 2432000, 2452000, 2472000, 2492000, 2512000, 2532000, 2552000, 2572000, 2592000],
+		
+		"slot_5_8_g_10m_freq_num": 10,
+		"slot_5_8_g_10m_freq_table": [5180000, 5220000, 5260000, 5300000, 5340000,5500000, 5560000, 5720000, 5760000, 5800000]
+	},
+
+	"bb_mcs_judge_config": {
+		
+		"average_judge_cycle" : 38,
+		"average_judge_cycle_note": "average_judge_cycle,unit (0.1ms); two tlv in one frame = 2 * 38 *0.1ms",
+
+		"mcs_hold_limit_time" : 200,
+		"mcs_hold_limit_time_note": "mcs_hold_limit_time, unit (ms)",
+
+		"snr_average_calc_num" : 1,
+		"snr_average_calc_num_note": "1 <=snr_average_calc_num <= 8",
+		
+		"qam_snr_threshold": {
+			"MCS0"  : ["0x0",   "0x80"  ], 
+			"MCS1"  : ["0x64",  "0xFE" ],
+			"MCS2"  : ["0xE3",  "0x472" ],
+			"MCS3"  : ["0x388", "0x13dc" ],
+			"MCS4"  : ["0xc88", "0x1f79"],
+			"MCS5"  : ["0x13dc", "0xffff"],
+			"note"  : "qam_snr_threshold , value of bb_snr_reg"
+			},
+			
+		"snr_down_cnt_threshold": {
+			"MCS1"  : 42,
+			"MCS2"  : 35,
+			"MCS3"  : 28,
+			"MCS4"  : 14,
+			"MCS5"  : 7,
+			"note"  : "snr_down_cnt_threshold , unit (ms)"		
+		},	
+		
+		"snr_up_cnt_threshold": {
+			"MCS0"  : 3000,
+			"MCS1"  : 3000,
+			"MCS2"  : 6000,
+			"MCS3"  : 10000,
+			"MCS4"  : 10000,
+			"note"  : "snr_up_cnt_threshold , unit (ms)"	
+		},	
+		
+		"qam_ldpc_fraction_up": {
+			"MCS0"  : [0, 20, 100 ],
+			"MCS1"  : [1, 10, 100 ],
+			"MCS2"  : [2, 5 , 100 ],
+			"MCS3"  : [3, 0 , 100 ],
+			"MCS4"  : [4, 0 , 100 ]
+		},
+			
+		"qam_ldpc_fraction_down": {
+			"MCS1"  : [1, 50, 100 ],
+			"MCS2"  : [2, 30, 100 ],
+			"MCS3"  : [3, 10, 100 ],
+			"MCS4"  : [4, 1 , 100 ],
+			"MCS5"  : [5, 5 , 1000 ]
+		},
+			
+		"ldpc_up_cnt_threshold": {
+			"MCS0"  : 3000,
+			"MCS1"  : 3000,
+			"MCS2"  : 6000,
+			"MCS3"  : 10000,
+			"MCS4"  : 10000,
+			"note"  : "ldpc_up_cnt_threshold , unit (ms)"
+		},
+		
+		"ldpc_down_cnt_threshold": {
+			"MCS1"  : 8,
+			"MCS2"  : 8,
+			"MCS3"  : 4,
+			"MCS4"  : 4,
+			"MCS5"  : 4,
+			"note"  : "ldpc_down_cnt_threshold , unit (ms)"		
+		},
+
+		"qam_ldpc_judge_cnt": {
+			"ldpc_judge_cnt"   : 50,
+			"note"             : "qam_ldpc_judge_cnt , unit (ms)"		
+		}
+        },
+	"bb_mcs_config": {
+		"mcs_map_cfg": {
+			"mcs_map_cfg_t":"value1:0:BPSK  1:QPSK 2:QAM_16 3:QAM_64 4:QAM_256  value2:0:SLOT_CR_1_2 1:SLOT_CR_2_3_A 2:SLOT_CR_2_3_B 3:SLOT_CR_3_4_A 4:SLOT_3_4_B 5: SLOT_5_6 value3:0:REPEAT_MODE_0 1:REPEAT_MODE_1 2:REPEAT_MODE_2 3:REPEAT_MODE_3 4:REPEAT_MODE_4 5:REPEAT_MODE_5 6:REPEAT_MODE_6 7:REPEAT_MODE_7",
+			"MCS0"  : [0, 0, 3], 
+			"MCS1"  : [0, 0, 0],
+			"MCS2"  : [1, 0, 0],
+			"MCS3"  : [2, 0, 0],
+			"MCS4"  : [3, 0, 0],
+			"MCS5"  : [3, 1, 0]
+		},
+
+		"sys_init_mcs_value" : 2,
+
+		"modeb_mcs_table_10m":{
+			"mcs_num" : 5,
+			"mcs_table" : [0, 1, 2, 3, 4]
+		},
+
+		"modeb_mcs_table_20m_hw_v1p0":{
+			"mcs_num" : 4,
+			"mcs_table" : [1, 2, 3, 4]
+		},
+
+		"modeb_mcs_table_20m_hw_v1p2":{
+			"mcs_num" : 6,
+			"mcs_table" : [0, 1, 2, 3, 4,5]
+		},
+
+		"modeb_mcs_table_40m":{
+			"mcs_num" : 5,
+			"mcs_table" : [1, 2, 3, 4, 5 ]
+		},
+
+		"moded_mcs_table_20m":{
+			"mcs_num" : 3,
+			"mcs_table" : [3, 4, 5 ]
+		},
+		"moded_mcs_table_40m":{
+			"mcs_num" : 4,
+			"mcs_table" : [2, 3, 4, 5 ]
+		}
+	},
+
+
+	"video_rate_config": {
+
+		"video_rate_table_10m":{
+			"help" : "max_throughtput*0.85",
+			"MCS1" : 2,
+			"MCS2" : 5,
+			"MCS3" : 9,
+			"MCS4" : 14,
+			"MCS5" : 20
+		},
+
+		"video_rate_table_20m":{
+	        	"help":"value: 0:disable bitrate 1:1M Bitrate 2:2M Bitrate 3:3M Bitrate ... 60:60M Bitrate",
+			"MCS0" : 1.2,
+			"MCS1" : 2.5,
+			"MCS2" : 5,
+			"MCS3" : 10,
+			"MCS4" : 15,
+			"MCS5" : 20
+                },
+
+		"video_rate_table_40m":{
+			"MCS0" : 2.5,
+			"MCS1" : 5,
+			"MCS2" : 10,
+			"MCS3" : 20,
+			"MCS4" : 30,
+			"MCS5" : 40
+		}
+	},
+
+        "bb_auto_pwr_ctrl_config" : {
+                "auto_pwr_ctrl_en" : 0,
+                "auto_pwr_mcs_thresh" : 3,
+                "gain_ctrl" : [80, 85],
+                "auto_pwr_change_time" : [0, 100, 0, 600, 0, 300], 
+                "auto_pwr_default_step" : 2,
+                "auto_pwr_ldpc_ctrl" : [150, 0, 3, 500, 0, 0], 
+                "auto_pwr_ctrl_dbm" : [10, 17],
+                "auto_pwr_offset" : "-1"
+        },
+
+        "bb_watermark_alarm" : {
+                "en_mark" : 1,
+                "mcs0_mark" : [3, 6],
+                "mcs1_mark" : [6, 10],
+                "mcs2_mark" : [9, 15],
+                "mcs3_mark" : [15,28],
+                "mcs4_mark" : [24,45],
+                "mcs5_mark" : [33,66]
+        },
+
+	"bb_power_ctrl_config":	{
+		"mode": 1,
+		"powerAutoCtrl": 0,
+		"rf_power_set":  11,
+		"rf_gain_range": 16,
+		"rf_power_offset": 0,
+		"use_default_pwr_cfg_list": 1,
+	
+		"st_5g_slot_PowerClose_fem_default": {	
+					"0dbm"  : ["0x1f", "0x0c00", 60],
+					"1dbm"  : ["0x1e", "0x0c00", 60],
+					"2dbm"  : ["0x1d", "0x1000", 60],
+					"3dbm"  : ["0x1c", "0x1000", 60],
+					"4dbm"  : ["0x1b", "0x1C00", 60],
+					"5dbm"  : ["0x1b", "0x2700", 60],
+					"6dbm"  : ["0x1a", "0x2900", 200],
+					"7dbm"  : ["0x19", "0x2b00", 200],
+					"8dbm"  : ["0x17", "0x2e00", 200],
+					"9dbm"  : ["0x16", "0x3000", 200],
+					"10dbm" : ["0x15", "0x3300", 200],
+					"11dbm" : ["0x13", "0x3600", 200],
+					"12dbm" : ["0x12", "0x3a00", 200],
+					"13dbm" : ["0x11", "0x3e00", 200],
+					"14dbm" : ["0x10", "0x4000", 150],
+					"15dbm" : ["0x10", "0x4300", 158],
+					"16dbm" : ["0x0f", "0x4600", 200],
+					"17dbm" : ["0x0d", "0x4a00", 200],
+					"18dbm" : ["0x0c", "0x4e00", 200],
+					"19dbm" : ["0x0a", "0x5200", 200],
+					"20dbm" : ["0x08", "0x5600", 200],
+					"21dbm" : ["0x07", "0x5a00", 200],
+					"22dbm" : ["0x06", "0x5d00", 228],
+					"23dbm" : ["0x04", "0x6000", 200],
+					"24dbm" : ["0x03", "0x6300", 200],
+					"25dbm" : ["0x02", "0x6700", 200],
+					"26dbm" : ["0x01", "0x6b00", 200],
+					"27dbm" : ["0x00", "0x7200", 200],
+					"28dbm" : ["0x00", "0x8000", 200],
+					"29dbm" : ["0x00", "0x8000", 200], 
+					"30dbm" : ["0x00", "0x8000", 200],
+					"31dbm" : ["0x00", "0x8000", 200],
+					"32dbm" : ["0x00", "0x8000", 200],
+					"33dbm" : ["0x00", "0x8000", 200]
+		},
+		"st_5g_br_PowerClose_fem_default": {
+					"0dbm"  : ["0x1f", "0x1000", 60],
+					"1dbm"  : ["0x1f", "0x1000", 60],
+					"2dbm"  : ["0x1f", "0x1000", 60],
+					"3dbm"  : ["0x1f", "0x1000", 60],
+					"4dbm"  : ["0x1f", "0x1C00", 60],
+					"5dbm"  : ["0x1f", "0x2000", 60],
+					"6dbm"  : ["0x1f", "0x2C00", 200],
+					"7dbm"  : ["0x1f", "0x3000", 200],
+					"8dbm"  : ["0x1e", "0x3300", 200],
+					"9dbm"  : ["0x1d", "0x3600", 200],
+					"10dbm" : ["0x1d", "0x3a00", 200],
+					"11dbm" : ["0x1c", "0x3d00", 200],
+					"12dbm" : ["0x1b", "0x3f00", 200],
+					"13dbm" : ["0x1a", "0x4300", 200],
+					"14dbm" : ["0x19", "0x4600", 150],
+					"15dbm" : ["0x17", "0x4a00", 158],
+					"16dbm" : ["0x16", "0x4d00", 200],
+					"17dbm" : ["0x16", "0x5100", 200],
+					"18dbm" : ["0x15", "0x5400", 200],
+					"19dbm" : ["0x14", "0x5600", 200],
+					"20dbm" : ["0x12", "0x5a00", 200],
+					"21dbm" : ["0x11", "0x5e00", 200],
+					"22dbm" : ["0x10", "0x6300", 228],
+					"23dbm" : ["0x0f", "0x6600", 200],
+					"24dbm" : ["0x0e", "0x6900", 200],
+					"25dbm" : ["0x0d", "0x6d00", 200],
+					"26dbm" : ["0x0b", "0x7100", 200],
+					"27dbm" : ["0x09", "0x7600", 200],
+					"28dbm" : ["0x06", "0x7d00", 200],
+					"29dbm" : ["0x01", "0x8a00", 200], 
+					"30dbm" : ["0x01", "0x8a00", 200]
+		}
+
+	}
+}
+

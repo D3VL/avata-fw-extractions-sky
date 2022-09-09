@@ -1,0 +1,32 @@
+#!/bin/sh
+sync
+case $ACTION in
+remove)
+	if [ -e /media/"$MDEV"p1 ]; then
+		umount /media/"$MDEV"p1
+		rm -rf /media/"$MDEV"p1
+	else
+		umount /media/$MDEV
+		rm -rf /media/$MDEV
+	fi
+	;;
+add)
+	if [ $MDEV == "mmcblk0" ] && [ ! -e /sys/firmware/devicetree/base/soc/sdhci@64500000/no-sd ]; then
+		if [ -e /dev/"$MDEV"p1 ]; then
+			mkdir -p /media/"$MDEV"p1
+			mount /dev/"$MDEV"p1 /media/"$MDEV"p1
+		else
+			mkdir -p /media/$MDEV
+			mount /dev/$MDEV /media/$MDEV
+		fi
+	elif [ $MDEV == "mmcblk1" ]; then
+		if [ -e /dev/"$MDEV"p1 ]; then
+			mkdir -p /media/"$MDEV"p1
+			mount /dev/"$MDEV"p1 /media/"$MDEV"p1
+		else
+			mkdir -p /media/$MDEV
+			mount /dev/$MDEV /media/$MDEV
+		fi
+	fi
+	;;
+esac

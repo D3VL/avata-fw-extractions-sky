@@ -1,0 +1,9 @@
+#!/bin/sh
+sync
+
+case $ACTION in
+remove)
+	umount /media/usb$MDEV
+	rm -rf /media/usb$MDEV
+	;;
+esac

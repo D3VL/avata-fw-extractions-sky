@@ -1,0 +1,18 @@
+{
+	"compatible1":	{
+	"test1": "test1",
+	"node1": {
+			"property1_string": "guangzhou",
+			"property1_array": ["array1", "array2", "array3", "array4"],
+			"property1_int": 1234567
+		}
+	},
+	"compatible2":	{
+	"test2": "test2",
+	"node2": {
+			"property2_string": "guangzhou",
+			"property2_array": ["array1_2", "array2_2", "array3_2", "array4_2"],
+			"property2_int": 1234567
+		}
+	}
+}

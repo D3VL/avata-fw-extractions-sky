@@ -1,0 +1,587 @@
+#! /bin/ash
+
+# Start all init scripts in /etc/init.d
+# executing them in numerical order.
+#
+
+export PATH="/bin:/sbin:/usr/bin:/usr/sbin:/local/usr/bin/:."
+export LD_LIBRARY_PATH="/lib:/usr/lib:/local/usr/lib:"
+
+# get sceniaro from gAPP
+source /etc/init.d/product_profile.sh
+
+flashtype=null
+userapp_part=null
+ceva0_part=null
+ceva1_part=null
+ceva2_part=null
+ceva3_part=null
+a7_rtos_part=null
+usr_data_part=null
+factory_part=null
+
+echo "STARTUP"
+
+# check partition validity by bootargs part_info
+# para1: partition index, each partition in the order corresponds to one bit
+function partvalid()
+{
+	# 0: invalid, otherwise valid
+	ret=`awk -v nbit="$1" -F '[ =]' '{i = 1; while (i <= NF) {if ($i == "part_info") {print and($(i + 1), lshift(1, nbit));} i++;}}' /proc/cmdline`
+	if [ $ret == 0 ]; then
+		echo "n"
+	else
+		echo "y"
+	fi
+}
+
+# whether part_info exsit or not
+if [ ! -z $part_info ]; then
+	haspart_info=y
+else
+	haspart_info=n
+fi
+
+# Attention: part_info is ordered by ini file, and don't contain romcode, spl0, spl1, gpt
+function get_mtd_valid_part() {
+	# for exsample, part is mtd0, mtd1...
+	part=`cat /proc/mtd | grep -r $1 -m 1 -w | cut -d : -f 1` 1>/dev/null 2>&1
+	if [ ! -z $part ]; then
+		if [ $haspart_info == y ]; then
+			partnum=`echo $part | sed 's/mtd//g'` 1>/dev/null 2>&1
+			if [ $flashtype == "nor" ]; then
+				# part_info index from 0, but /proc/mtd from 5
+				n=`expr $partnum - 5`
+			elif [ $flashtype == "mcp" ]; then
+				# Attention: assume that user partitions are all in nand
+				# mtd0 is the second line, the first line is dev: 	size ...,
+				# cat /proc/mtd to see the details
+				nand_part=`grep -rn "art_nand" /proc/mtd | cut -d : -f 1` 1>/dev/null 2>&1
+				# nand partition prior to nor partition
+				if [ $nand_part == 2 ]; then
+					m=`cat /proc/mtd | wc -l`
+					k=`grep -rnE "env|env0" -m 1 -w /proc/mtd | cut -d : -f 1`
+					n=`expr $m - $k + $partnum`
+				else
+					# nor partition prior to nand partition
+					# part_info index from 0, but /proc/mtd from 5 + 1(art_nand)
+					n=`expr $partnum - 6`
+				fi
+			fi
+
+			valid=$(partvalid $n)
+			# invalid
+			if [ $valid == n ]; then
+				partnum=`expr $partnum + 1`
+			fi
+
+			echo "mtd"$partnum
+		else
+			echo $part
+		fi
+	fi
+}
+
+#get /dev/mtdN with get_mtd_char_dev
+function get_mtd_char_dev() {
+	userapp_part=`cat /proc/mtd | grep -r userapp -m 1 -w | cut -d : -f 1` 1>/dev/null 2>&1
+	# dual part
+	if [ -z $userapp_part ]; then
+		userapp_part=$(get_mtd_valid_part "userapp0")
+	fi
+	ceva0_part=`cat /proc/mtd | grep -r ceva0 -m 1 -w | cut -d : -f 1` 1>/dev/null 2>&1
+	if [ -z $ceva0_part ]; then
+		ceva0_part=$(get_mtd_valid_part "ceva00")
+	fi
+	ceva1_part=`cat /proc/mtd | grep -r ceva1 -m 1 -w | cut -d : -f 1` 1>/dev/null 2>&1
+	if [ -z $ceva1_part ]; then
+		ceva1_part=$(get_mtd_valid_part "ceva10")
+	fi
+	ceva2_part=`cat /proc/mtd | grep -r ceva2 -m 1 -w | cut -d : -f 1` 1>/dev/null 2>&1
+	if [ -z $ceva2_part ]; then
+		ceva2_part=$(get_mtd_valid_part "ceva20")
+	fi
+	ceva3_part=`cat /proc/mtd | grep -r ceva3 -m 1 -w | cut -d : -f 1` 1>/dev/null 2>&1
+	if [ -z $ceva3_part ]; then
+		ceva3_part=$(get_mtd_valid_part "ceva30")
+	fi
+	a7_rtos_part=`cat /proc/mtd | grep -r a7_rtos -m 1 -w | cut -d : -f 1` 1>/dev/null 2>&1
+	if [ -z $a7_rtos_part ]; then
+		a7_rtos_part=$(get_mtd_valid_part "a7_rtos0")
+	fi
+	usr_data_part=`cat /proc/mtd | grep -r usr_data -m 1 -w | cut -d : -f 1` 1>/dev/null 2>&1
+	if [ -z $usr_data_part ]; then
+		usr_data_part=$(get_mtd_valid_part "usr_data0")
+	fi
+	factory_part=`cat /proc/mtd | grep -r factory -m 1 -w | cut -d : -f 1` 1>/dev/null 2>&1
+	if [ -z $factory_part ]; then
+		factory_part=$(get_mtd_valid_part "factory0")
+	fi
+}
+
+# use ubiattach command to attach mtd to ubi dev
+# para1: mtdN
+# para2: ubi number M
+function ubi_attach_mtd_to_ubi() {
+	if [ $# != 2 ]; then
+		return 1
+	else
+		mtd_part_num=`echo $1 | sed 's/mtd//g'` 1>/dev/null 2>&1
+		ubiattach -m $mtd_part_num -d $2 /dev/ubi_ctrl
+	fi
+
+	return $?
+}
+
+function mcp_attach_mtd_to_ubi() {
+	# mcp using the ubi partition, ubiattach partition
+
+	ubi_attach_mtd_to_ubi $userapp_part 1
+	/etc/ubiblock -c /dev/ubi1_0
+	if [ $? == 0 ]; then userapp_part=ubiblock1_0;
+	else userapp_part=null;
+	fi
+
+	ubi_attach_mtd_to_ubi $ceva0_part 2
+	if [ $? == 0 ]; then ceva0_part=ubi2_0;
+	else ceva0_part=null;
+	fi
+
+	ubi_attach_mtd_to_ubi $ceva1_part 3
+	if [ $? == 0 ]; then ceva1_part=ubi3_0;
+	else ceva1_part=null;
+	fi
+
+	ubi_attach_mtd_to_ubi $ceva2_part 4
+	if [ $? == 0 ]; then ceva2_part=ubi4_0;
+	else ceva2_part=null;
+	fi
+
+	ubi_attach_mtd_to_ubi $ceva3_part 5
+	if [ $? == 0 ]; then ceva3_part=ubi5_0;
+	else ceva3_part=null;
+	fi
+
+	a7_rtos_part=`echo $a7_rtos_part | sed 's/mtd/mtdblock/g'` 1>/dev/null 2>&1
+        if [ -z "$a7_rtos_part" ]; then a7_rtos_part=null; fi
+
+	#ubi_attach_mtd_to_ubi $a7_rtos_part 6
+	#if [ $? == 0 ]; then a7_rtos_part=ubi6_0;
+	#else a7_rtos_part=null;
+	#fi
+
+	ubi_attach_mtd_to_ubi $usr_data_part 7
+	if [ $? == 0 ]; then usr_data_part=ubi7_0;
+	else usr_data_part=null;
+	fi
+
+	factory_part=`echo $factory_part | sed 's/mtd//g'` 1>/dev/null 2>&1
+	if [ -z $factory_part ]; then factory_part=null
+	fi
+}
+
+
+function nor_mtd_to_mtdblock() {
+	userapp_part=`echo $userapp_part | sed 's/mtd/mtdblock/g'` 1>/dev/null 2>&1
+	if [ -z "$userapp_part" ]; then userapp_part=null; fi
+
+	ceva0_part=`echo $ceva0_part | sed 's/mtd/mtdblock/g'` 1>/dev/null 2>&1
+	if [ -z "$ceva0_part" ]; then ceva0_part=null; fi
+
+	ceva1_part=`echo $ceva1_part | sed 's/mtd/mtdblock/g'` 1>/dev/null 2>&1
+	if [ -z "$ceva1_part" ]; then ceva1_part=null; fi
+
+	ceva2_part=`echo $ceva2_part | sed 's/mtd/mtdblock/g'` 1>/dev/null 2>&1
+	if [ -z "$ceva2_part" ]; then ceva2_part=null; fi
+
+	ceva3_part=`echo $ceva3_part | sed 's/mtd/mtdblock/g'` 1>/dev/null 2>&1
+	if [ -z "$ceva3_part" ]; then ceva3_part=null; fi
+
+	a7_rtos_part=`echo $a7_rtos_part | sed 's/mtd/mtdblock/g'` 1>/dev/null 2>&1
+	if [ -z "$a7_rtos_part" ]; then	a7_rtos_part=null; fi
+
+	usr_data_part=`echo $usr_data_part | sed 's/mtd/mtdblock/g'` 1>/dev/null 2>&1
+	if [ -z "$usr_data_part" ]; then usr_data_part=null; fi
+
+	factory_part=`echo $factory_part | sed 's/mtd/mtdblock/g'` 1>/dev/null 2>&1
+	if [ -z "$factory_part" ]; then	factory_part=null; fi
+}
+
+function get_mmc_valid_part() {
+	part=`cat fdisk.info | grep -r $1 -m 1 -w | sed 's/^[ \t]*//g' | cut -d " " -f 1` 1>/dev/null 2>&1
+	if [ ! -z "$part" ]; then
+		if [ $haspart_info == y ]; then
+			# part_info index from 0, but fdisk from 1
+			n=`expr $part - 1`
+			valid=$(partvalid $n)
+			# invalid
+			if [ $valid == n ]; then
+				part=`expr $part + 1`
+			fi
+		fi
+		echo $part
+	fi
+}
+
+#from fdisk info, get mmc partition infor
+get_mmc_block_dev() {
+	if [ $1 == mmc0 ]; then
+		fdisk /dev/mmcblk0 -l > fdisk.info;
+		mmc_prefix=mmcblk0p
+	else
+		fdisk /dev/mmcblk1 -l > fdisk.info;
+		mmc_prefix=mmcblk1p
+	fi
+
+	userapp_part=`cat fdisk.info | grep -r userapp -m 1 -w | sed 's/^[ \t]*//g' | cut -d " " -f 1` 1>/dev/null 2>&1
+	if [ -z "$userapp_part" ]; then userapp_part=null;
+	else userapp_part="$mmc_prefix"$userapp_part;
+	fi
+
+	# check whether dual part
+	if [ $userapp_part == null ]; then
+		userapp_part=$(get_mmc_valid_part "userapp0")
+		if [ -z "$userapp_part" ]; then userapp_part=null;
+		else userapp_part="$mmc_prefix"$userapp_part;
+		fi
+	fi
+
+	ceva0_part=`cat fdisk.info | grep -r ceva0 -m 1 -w | sed 's/^[ \t]*//g' | cut -d " " -f 1` 1>/dev/null 2>&1
+	if [ -z "$ceva0_part" ]; then ceva0_part=null;
+	else ceva0_part="$mmc_prefix"$ceva0_part;
+	fi
+
+	# check whether dual part
+	if [ $ceva0_part == null ]; then
+		ceva0_part=$(get_mmc_valid_part "ceva00")
+		if [ -z "$ceva0_part" ]; then ceva0_part=null;
+		else ceva0_part="$mmc_prefix"$ceva0_part;
+		fi
+	fi
+
+	ceva1_part=`cat fdisk.info | grep -r ceva1 -m 1 -w | sed 's/^[ \t]*//g' | cut -d " " -f 1` 1>/dev/null 2>&1
+	if [ -z "$ceva1_part" ]; then ceva1_part=null;
+	else ceva1_part="$mmc_prefix"$ceva1_part;
+	fi
+
+	# check whether dual part
+	if [ $ceva1_part == null ]; then
+		ceva1_part=$(get_mmc_valid_part "ceva10")
+		if [ -z "$ceva1_part" ]; then ceva1_part=null;
+		else ceva1_part="$mmc_prefix"$ceva1_part;
+		fi
+	fi
+
+	ceva2_part=`cat fdisk.info | grep -r ceva2 -m 1 -w | sed 's/^[ \t]*//g' | cut -d " " -f 1` 1>/dev/null 2>&1
+	if [ -z "$ceva2_part" ]; then ceva2_part=null;
+	else ceva2_part="$mmc_prefix"$ceva2_part;
+	fi
+
+	# check whether dual part
+	if [ $ceva2_part == null ]; then
+		ceva2_part=$(get_mmc_valid_part "ceva20")
+		if [ -z "$ceva2_part" ]; then ceva2_part=null;
+		else ceva2_part="$mmc_prefix"$ceva2_part;
+		fi
+	fi
+
+	ceva3_part=`cat fdisk.info | grep -r ceva3 -m 1 -w | sed 's/^[ \t]*//g' | cut -d " " -f 1` 1>/dev/null 2>&1
+	if [ -z "$ceva3_part" ]; then ceva3_part=null;
+	else ceva3_part="$mmc_prefix"$ceva3_part;
+	fi
+
+	# check whether dual part
+	if [ $ceva3_part == null ]; then
+		ceva3_part=$(get_mmc_valid_part "ceva30")
+		if [ -z "$ceva3_part" ]; then ceva3_part=null;
+		else ceva3_part="$mmc_prefix"$ceva3_part;
+		fi
+	fi
+
+	a7_rtos_part=`cat fdisk.info | grep -r a7_rtos -m 1 -w | sed 's/^[ \t]*//g' | cut -d " " -f 1` 1>/dev/null 2>&1
+	if [ -z "$a7_rtos_part" ]; then a7_rtos_part=null;
+	else a7_rtos_part="$mmc_prefix"$a7_rtos_part;
+	fi
+
+	# check whether dual part
+	if [ $a7_rtos_part == null ]; then
+		a7_rtos_part=$(get_mmc_valid_part "a7_rtos0")
+		if [ -z "$a7_rtos_part" ]; then a7_rtos_part=null;
+		else a7_rtos_part="$mmc_prefix"$a7_rtos_part;
+		fi
+	fi
+
+	usr_data_part=`cat fdisk.info | grep -r usr_data -m 1 -w | sed 's/^[ \t]*//g' | cut -d " " -f 1` 1>/dev/null 2>&1
+	if [ -z "$usr_data_part" ]; then usr_data_part=null;
+	else usr_data_part="$mmc_prefix"$usr_data_part;
+	fi;
+
+	# check whether dual part
+	if [ $usr_data_part == null ]; then
+		usr_data_part=$(get_mmc_valid_part "usr_data0")
+		if [ -z "$usr_data_part" ]; then usr_data_part=null;
+		else usr_data_part="$mmc_prefix"$usr_data_part;
+		fi
+	fi
+
+	factory_part=`cat fdisk.info | grep -r factory -m 1 -w | sed 's/^[ \t]*//g' | cut -d " " -f 1` 1>/dev/null 2>&1
+	if [ -z "$factory_part" ]; then factory_part=null;
+	else factory_part="$mmc_prefix"$factory_part;
+	fi
+
+	# check whether dual part
+	if [ $factory_part == null ]; then
+		factory_part=$(get_mmc_valid_part "factory0")
+		if [ -z "$factory_part" ]; then factory_part=null;
+		else factory_part="$mmc_prefix"$factory_part;
+		fi
+	fi
+
+	echo userapp_part=$userapp_part  ceva0_part=$ceva0_part ceva1_part=$ceva1_part ceva2_part=$ceva2_part ceva3_part=$ceva3_part \
+		a7_rtos_part=$a7_rtos_part usr_data_part=$usr_data_part factory_part=$factory_part
+}
+
+
+# get mtd parts information from /proc/mtd
+# FIxme: can not get any information for emmc
+function get_mtd_parts() {
+
+	echo "get get_mtd_parts for flashtype=" $flashtype
+
+	if [ $flashtype == nor ] || [ $flashtype == mcp ]; then
+
+		#if device type is nor or mcp, get dev node from /proc
+		get_mtd_char_dev
+
+		#for qspi nor, replace mtd to mtdblock
+		#for mcp device, create ubi device use ubi_attach
+		if [ $flashtype == nor ]; then
+			nor_mtd_to_mtdblock
+		else
+			mcp_attach_mtd_to_ubi
+		fi
+	elif [ $flashtype == mmc1 ] || [ $flashtype == mmc0 ]; then
+		get_mmc_block_dev $flashtype
+	fi
+}
+
+# mount user application partition for different flashtype
+# for nor flash, first try mount without -t parameter. if fail, try mount jffs2
+function mount_user_app_partition() {
+	if [ $flashtype == nor ]; then
+		mount /dev/$userapp_part /local
+		if [ ! $? == 0 ]; then
+			mount -t jffs2 /dev/$userapp_part /local
+		fi
+	elif [ $flashtype == mcp ]; then
+		mount -t squashfs -r /dev/$userapp_part /local/
+		# if failed, mount ubifs
+		if [ $? != 0 ]; then
+			userapp_part=`echo $userapp_part | sed 's/ubiblock/ubi/g'` 1>/dev/null 2>&1
+			if [ ! -z "$userapp_part" ]; then
+				mount -t ubifs /dev/$userapp_part /local/
+			fi
+		fi
+	elif [ $flashtype == mmc0 ] || [ $flashtype == mmc1 ]; then
+		echo mount -t ext4 /dev/$userapp_part /local
+		mount -t ext4 /dev/$userapp_part /local
+	fi
+}
+
+
+function get_flashtype() {
+
+	#fixme: bootmode can get from uboot.
+	bootconfig_m=`devmem 0x6061003c`
+	bootconfig_h=`devmem 0x60633100`
+	mask=0xff0000
+
+	if [ bootconfig_h == 0x00000000 ]; then
+		if [ bootconfig_m == 0x00F00000 ] || [ bootconfig_m == 0x00F00001 ]; then
+			echo "QSPI flash boot mode not support !!!"
+			exit
+		fi
+	fi
+
+	let tmp=$(($bootconfig_m & $mask))
+
+	if [ $tmp != 0 ]; then
+		if [ $tmp == 15859712 ]; then
+			bootmode=emmc
+		else
+			bootmode=mtd
+		fi
+	else
+		if [ $bootconfig_h == 0x00000002 ]; then
+			bootmode=emmc
+		else
+			bootmode=mtd
+		fi
+	fi
+
+	case $bootmode in
+	emmc)
+		#if bootmod is emmc, wait and check emmc partition
+		echo "waiting emmc or sd device done"
+		while [ true ]
+		do
+			if [ -e "/dev/mmcblk0boot0" ]; then
+				flashtype=mmc0
+				break
+			elif [ -e "/dev/mmcblk1boot0" ]; then
+				flashtype=mmc1
+				break
+			fi
+		done
+		;;
+	*)
+		#if bootmode is qspi nor, check the /dev/mtd to know device is qspi nor or mcp
+		cat /proc/mtd | grep -r "art_nand" -m 1
+		if [ $? == 0 ]; then
+			flashtype=mcp
+		else
+			flashtype=nor
+		fi
+		;;
+	esac
+}
+
+#call function to get flashtype
+get_flashtype
+
+#call function to get mtd_parts
+#fixme: get mmc block from system information
+get_mtd_parts
+
+#mount user application partition
+mount_user_app_partition
+
+mkdir -p /var/lock &
+
+sysctl -p /etc/init.d/sysctl.conf &
+
+ln -sf /usrdata/factory /tuning
+
+############################ insmod driver ######
+if [ ! -e /mod ]; then
+	ln -s /local/mod ./
+fi
+
+if [ -e "/mod/rpc_fs.ko" ]; then
+	insmod /mod/rpc_fs.ko &
+fi
+
+if [ -e "/mod/videobuf2-core.ko" ]; then
+	echo "insmod videobuf2-core.ko"
+	insmod /mod/videobuf2-core.ko &
+fi
+
+
+############################ common service run deamon ######
+
+#copy some user libs to /lib, these libs used for upgrade.
+
+cp -f /local/usr/lib/libar_log.so /lib
+cp -f /local/usr/lib/libartosyn.so /lib
+cp -f /local/usr/lib/libar_lancher.so /lib
+cp -f /local/usr/lib/libmultimedia.so /lib
+cp -f /local/usr/lib/libavp_buffer.so /lib
+
+#copy ota-prepare.sh to /tmp
+if [ -e "/etc/ota-prepare.sh" ]; then
+	cp /etc/ota-prepare.sh /tmp
+fi
+#end of copy
+
+echo "#Device name     Device offset   Env. size       Flash sector size" > /etc/fw_env.config
+if [ $flashtype == nor ]; then
+	env_vaild=$(get_mtd_valid_part "env0")
+	echo "/dev/$env_vaild       0x0000          0x400           0x10000" >> /etc/fw_env.config
+elif [ $flashtype == mcp ]; then
+	part=`cat /proc/mtd | grep -r "env0" -m 1 -w | cut -d : -f 1` 1>/dev/null 2>&1
+	partnum=`echo $part | sed 's/mtd//g'` 1>/dev/null 2>&1
+	valid=$(partvalid 0)
+	# invalid
+	if [ $valid == n ]; then
+		partnum=`expr $partnum + 1`
+	fi
+	echo "/dev/mtd$partnum       0x0000          0x400           0x10000" >> /etc/fw_env.config
+elif [ $flashtype == mmc0 ] || [ $flashtype == mmc1 ]; then
+	env_vaild=$(get_mmc_valid_part "env0")
+	echo "/dev/$mmc_prefix$env_vaild   0x0000          0x4000          0x4000" >> /etc/fw_env.config
+fi
+
+# start log system, print kernel and rtos log into system log
+#if [ -e "/local/usr/bin/logd" ]; then
+#	logd &
+#	if [ -e "local/usr/bin/ar_logcat" ]; then
+#		ar_logcat -r &
+#	else
+#		echo "local/usr/bin/ar_logcat not exist!"
+#	fi
+#else
+#	echo "/local/usr/bin/logd not exist!"
+#fi
+
+#if [ $flashtype == mmc0 ] || [ $flashtype == mmc1 ]; then
+#	/etc/init.d/config_dvp_pin.sh &
+#fi
+
+/etc/init.d/factory_mount.sh $flashtype $factory_part &
+
+/etc/init.d/usrdata_mount.sh $flashtype $usr_data_part
+
+echo /sbin/mdev > /proc/sys/kernel/hotplug
+mdev -s &
+
+# whether enter normal system or not, if the script is not exsit, enter normal
+# system defaultly
+if [ -e "/etc/init.d/whether-normal-system.sh" ]; then
+	/etc/init.d/whether-normal-system.sh $gAPP $flashtype $a7_rtos_part \
+		$ceva0_part $ceva1_part $ceva2_part $ceva3_part
+	# 0: enter normal system, otherwise enter clean system
+	if [ $? != 0 ]; then
+		exit 0
+	fi
+fi
+
+###################################
+#check enumerate sd cards mount
+/etc/init.d/enumerate_sd_mount.sh &
+
+if [ -e "/local/shell/run.sh" ]; then
+	# here run customer start_$gAPP.sh
+	/local/shell/run.sh $gAPP $flashtype $a7_rtos_part \
+		$ceva0_part $ceva1_part $ceva2_part $ceva3_part &
+elif [ -e "/usrdata/shell/run.sh" ]; then
+	# here run usr_data start_$gAPP.sh
+	/usrdata/shell/run.sh $gAPP $flashtype $a7_rtos_part \
+		$ceva0_part $ceva1_part $ceva2_part $ceva3_part &
+else
+	echo "run.sh not exist"
+fi
+
+# start log system, print kernel and rtos log into system log
+if [ -e "/local/usr/bin/logd" ]; then
+       logd &
+       if [ -e "local/usr/bin/ar_logcat" ]; then
+               ar_logcat -r &
+       else
+               echo "local/usr/bin/ar_logcat not exist!"
+       fi
+else
+       echo "/local/usr/bin/logd not exist!"
+fi
+
+if [ -e "/local/usr/bin/dbus-daemon" ] &&  [ -e "/local/usr/bin/dbus.conf" ] ; then
+        /local/usr/bin/dbus-daemon --config-file /local/usr/bin/dbus.conf &
+else
+        echo "no dbus daemon"
+fi
+
+if [ -e "/local/usr/bin/icc_file_operation" ]; then
+    /local/usr/bin/icc_file_operation &
+fi
+
+echo "STARTUP COMPLETE"
+

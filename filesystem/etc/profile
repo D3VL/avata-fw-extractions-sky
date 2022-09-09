@@ -1,0 +1,18 @@
+#
+# /etc/profile
+#
+
+export PATH="/bin:/sbin:/usr/bin:/usr/sbin:/local/bin/:/local/usr/bin/:/local/usr/sbin:."
+export LD_LIBRARY_PATH="/lib:/usr/lib:/local/lib:/local/usr/lib:"
+export HOME="/root"
+
+export DBUS_SESSION_BUS_ADDRESS="unix:path=/tmp/dbus-artosyn"
+
+source /etc/init.d/envQt-noiconv.config
+
+echo 1 > /proc/sys/kernel/core_uses_pid
+echo 2 > /proc/sys/fs/suid_dumpable
+echo "/tmp/coredump-%e-%s-%u-%g-%p-%t" > /proc/sys/kernel/core_pattern
+ulimit -c unlimited
+
+#end of file

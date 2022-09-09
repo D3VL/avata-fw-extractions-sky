@@ -1,0 +1,26 @@
+#!/bin/sh
+gadget="USB=1
+USB_HOST=0"
+
+host="USB=0
+USB_HOST=1"
+
+#echo "=============>" >> /etc/mdev.log
+#env >> /etc/mdev.log
+
+if [ $NAME == soc:extcon_dwc3 ]
+then
+	if [[ "$STATE" == "$gadget" ]]
+	then
+		#echo "gadget add" >> /etc/mdev.log
+		flock -x /var/lock/otg_lock -c "sh /etc/usb_gadget_start.sh"
+
+	elif [ "$STATE" == "$host" ]
+	then
+		#echo "gadget remove" >> /etc/mdev.log
+		flock -x /var/lock/otg_lock -c "sh /etc/usb_gadget_stop.sh"
+	else
+		echo $STATE not find
+		#echo $STATE not find >> /etc/mdev.log
+	fi
+fi
