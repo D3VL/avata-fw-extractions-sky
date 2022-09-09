@@ -35,8 +35,7 @@ jobs:
             })
 
       - name: Download Firmware File
-        working-directory: ~/temp
-        run: wget "${{ github.event.issue.body }}"
+        run: cd ~/temp && wget "${{ github.event.issue.body }}"
 
       - name: Get Firmware Name
         id: fw_name
