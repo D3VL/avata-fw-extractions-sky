@@ -1,0 +1,22 @@
+{
+    "CROP": {
+		"cropnum" : 1,
+		"crop1_720p_width" : 896,
+		"crop1_720p_height" : 720,
+		"crop1_720p_isp_offset" : 256,
+		"crop1_720p_hevc_offset" : 64,
+		"crop1_1080p_width" : 1408,
+		"crop1_1080p_height" : 1080,
+		"crop1_1080p_isp_offset" : 256,
+		"crop1_1080p_hevc_offset" : 0,
+			
+		"crop2_720p_width" : 1152,
+		"crop2_720p_height" : 720,
+		"crop2_720p_isp_offset" : 128,
+		"crop2_720p_hevc_offset" : 64,
+		"crop2_1080p_width" : 1664,
+		"crop2_1080p_height" : 1080,
+		"crop2_1080p_isp_offset" : 128,
+		"crop2_1080p_hevc_offset" : 0
+    }
+}

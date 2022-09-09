@@ -163,7 +163,6 @@ then
         echo "sensor version(0.3V)"
 else
 	echo "no sensor ($obj_adc) ..."
-	exit
 fi
 if [ $mtd_mnt == 1 ];then
 	echo "run arcast"
