@@ -50,7 +50,7 @@ jobs:
         run: git checkout -b "${{ steps.fw_version.outputs.name }}" 
       
       - name: Run extractor
-        run: ~/ar-firmware-tools/scripts/avatar_extract.sh "~/temp/${{ steps.fw_name.outputs.name }}"
+        run: ~/ar-firmware-tools/scripts/avatar_extract.sh ~/temp/${{ steps.fw_name.outputs.name }} ./
 
       - name: Commit changes
         run: git add -A && git commit -m "Extracted firmware ${{ steps.fw_version.outputs.name }}" && git push origin "${{ steps.fw_version.outputs.name }}"
