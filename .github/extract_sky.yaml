@@ -1,0 +1,74 @@
+name: Extract Avatar Sky
+
+# Controls when the workflow will run
+on:
+  issues:
+    types: [opened]
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+
+  extract_sky:
+    if: ${{ github.event.issue.title == 'extract' }}
+    name: Extract Sky Firmware
+    
+    # The type of runner that the job will run on
+    runs-on: extractor
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v3
+        with:
+          ref: 'main'
+          clean: false
+
+      - uses: actions/github-script@v3
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            github.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: 'Request Received - this may take a while!'
+            })
+
+      - name: Download Firmware File
+        working-directory: ~/temp
+        run: wget "${{ github.event.issue.body }}"
+
+      - name: Get Firmware Name
+        id: fw_name
+        run: basename "${{ github.event.issue.body }}"
+
+      - name: Pull Firmware Version from name
+        id: fw_version
+        run: basename "${{ github.event.issue.body }}" | sed -e 's/Avatar_Sky_//' | sed -e 's/.img//'
+
+      - name: Create a branch with the firmware version
+        id: create_branch
+        run: git checkout -b "${{ steps.fw_version.outputs.content }}" 
+      
+      - name: Run extractor
+        run: ~/ar-firmware-tools/scripts/avatar_extract.sh "~/temp/${{ steps.fw_name.outputs.content }}"
+
+      - name: Commit changes
+        run: git add -A && git commit -m "Extracted firmware ${{ steps.fw_version.outputs.content }}" && git push origin "${{ steps.fw_version.outputs.content }}"
+
+      - name: Merge into master
+        run: git checkout master && git merge "${{ steps.fw_version.outputs.content }}" && git push origin master
+
+      - name: Delete Firmware File
+        run: rm -rf ~/temp/${{ steps.fw_name.outputs.content }}
+
+      - uses: actions/github-script@v3
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            github.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: 'Firmware Extraction complete.'
+            })
