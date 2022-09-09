@@ -39,7 +39,7 @@ jobs:
 
       - name: Get Firmware Name
         id: fw_name
-        run: echo "::set-output name=name::$(basename \"${{ github.event.issue.body }}\")"
+        run: echo "::set-output name=name::$(basename '${{ github.event.issue.body }}')"
 
       - name: Get Firmware Version from name
         id: fw_version
