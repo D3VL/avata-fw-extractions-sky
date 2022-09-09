@@ -1,7 +1,7 @@
 {
     "HEVC": {
         "encoder_lowdelay_cfg": {
-            "minQP" : 24,
+            "minQP" : 18,
             "maxQP" : 51,
             "maxDeltaQp" : 4,
             "intraQP" : 28,
@@ -29,7 +29,7 @@
             "modeMapEnable" : 0,
             "distortionWindow" : 10,
             "distortionThreshold" : 1024,
-            "remainFrameBSThreshold" : 1,
+            "remainFrameBSThreshold" : 5,
             "encParamMode" : 0,
             "rcEnable" : 1,
             "deblock_flag" : 1,
@@ -46,7 +46,7 @@
             "chromaCbQpOffset" : 2,
             "chromaCrQpOffset" : 2,
             "initialRcQp" : 28,
-            "intraMinQp" : 24,
+            "intraMinQp" : 18,
             "intraMaxQp" : 51,
             "bs_mem_size" : 5242880,
 			      "constIntraPredFlag": 0,

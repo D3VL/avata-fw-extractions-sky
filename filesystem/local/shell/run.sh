@@ -166,7 +166,7 @@ else
 fi
 if [ $mtd_mnt == 1 ];then
 	echo "run arcast"
-	boot_assist /dev/$3 --size0 0x9000000 --cmdline "factory_dir=/local/factory/" &
+	boot_assist /dev/$3 --size0 0xC000000 --cmdline "factory_dir=/local/factory/" &
 else
 	echo "run arcast from nfs"
 	etc/init.d/start_eth.sh
@@ -189,7 +189,7 @@ while [ 1 ]; do
     if [ -e "/dev/ar_lancher" ]; then
         if [ -e "/local/usr/bin/fpv_ldy" ]; then
             echo "start fpv ldy"
-			fpv_ldy --type sky --start_bitrate 2560 --fps 100 --width 1280 --height 720&
+			fpv_ldy --type sky --start_bitrate 10240 --fps 100 --width 1280 --height 720&
         else
             echo "no fpv app!!!!"
         fi
@@ -208,10 +208,10 @@ fi
 #/local/factory/lowpower/end_lp.sh
 if [ -e "/local/usr/bin/ar_dbg_service" ]; then
     if [ -e "/sys/kernel/config/usb_gadget/g1/functions/rndis.usb0" ]; then
-        /local/usr/bin/ar_dbg_service --rndis &
+        /local/usr/bin/ar_dbg_service $BOARD_VER &
         echo start ar_dbg_service with RNDIS
     else
-        /local/usr/bin/ar_dbg_service &
+        /local/usr/bin/ar_dbg_service $BOARD_VER &
         echo start ar_dbg_service without RNDIS
     fi
 else
@@ -242,6 +242,7 @@ fi
 cp /local/shell/mkexfatfs /local/usr/bin/
 chmod 777 /local/usr/bin/mkexfatfs
 
+chmod 777 /local/shell/*
 /local/shell/record_mount.sh &
 
 fpv_sky_led &

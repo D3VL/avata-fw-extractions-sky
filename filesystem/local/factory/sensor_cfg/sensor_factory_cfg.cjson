@@ -1,6 +1,6 @@
 {
     "CROP": {
-		"cropnum" : 1,
+		"cropnum" : 2,
 		"crop1_720p_width" : 896,
 		"crop1_720p_height" : 720,
 		"crop1_720p_isp_offset" : 256,
