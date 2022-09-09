@@ -181,7 +181,10 @@ auto_fsck_sky
 cfg_fpv_sky_board
 #BOARD_VER,0-6s2T2R,1-6s1T1R,2-1S1T1R
 BOARD_VER=$?
-echo "board_ver=$BOARD_VER"
+echo "------>board_ver=$BOARD_VER"
+fpv_sky_board_precfg --fpv_type $BOARD_VER --hwver
+HW_VER=$?
+echo "------->hw ver=$HW_VER"
 
 #resolution 0: 1080p, 1:4K
 resolution=0
@@ -197,6 +200,12 @@ while [ 1 ]; do
     fi
     sleep 1
 done
+
+if [ -e "/local/usr/bin/bb_cfg" ]; then
+    chmod 777 /local/usr/bin/bb_cfg
+    /local/usr/bin/bb_cfg &
+fi
+
 #enable framebuffer overlay, resolution should same as medical cam app
 if [ $resolution == 0 ];then
     echo "insmod 1080p framebuffer"
@@ -248,7 +257,7 @@ chmod 777 /local/shell/*
 fpv_sky_led &
 #ar_fpv_service 0 &
 
-fpv_sky_service -b $BOARD_VER &
+fpv_sky_service -b $BOARD_VER -v $HW_VER &
 bb_match -t 0 &
 
 exit

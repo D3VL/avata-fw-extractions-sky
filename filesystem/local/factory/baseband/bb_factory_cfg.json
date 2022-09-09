@@ -153,7 +153,8 @@
   			"br_hop_mode": 0,
   			"main_hop_mode": 0,
   			"fs_row_num": 128,
-  			"shut_down_flag":0
+  			"shut_down_flag":0,
+			"hbw_mode":0
   		}
 	},
 
@@ -324,11 +325,11 @@
                 },
 
 		"video_rate_table_40m":{
-			"MCS0" : 3,
-			"MCS1" : 6,
+			"MCS0" : 2.8,
+			"MCS1" : 5.6,
 			"MCS2" : 12,
-			"MCS3" : 20,
-			"MCS4" : 30,
+			"MCS3" : 22.4,
+			"MCS4" : 33.6,
 			"MCS5" : 30
 		}
 	},
