@@ -15,14 +15,14 @@ jobs:
     # The type of runner that the job will run on
     runs-on: extractor
 
-    steps:
-    # https://github.com/actions/setup-node
-    - uses: actions/setup-node@v2
-      with:
-        node-version: '16'
-
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
+
+      # https://github.com/actions/setup-node
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
         with:
