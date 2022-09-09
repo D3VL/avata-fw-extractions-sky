@@ -12,7 +12,7 @@
             "intraRefreshArg" : 1,
             "initialDelay" : 10,
             "gop_type" : 2,
-            "gop_size" : 60,
+            "gop_size" : 10,
             "skip_ref" : 0,
             "idr_interval" : 2,
             "mirror_enable" : 0,
